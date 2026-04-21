@@ -22,3 +22,6 @@ Thumbs.db
 # Logs
 *.log
 nohup.out
+
+# Uploads (user content)
+public/uploads/

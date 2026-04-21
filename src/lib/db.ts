@@ -171,26 +171,8 @@ if (catCount.c === 0) {
   }
 }
 
-// Seed some demo products
-const prodCount = db.prepare('SELECT COUNT(*) as c FROM products').get() as { c: number };
-if (prodCount.c === 0) {
-  const insertProd = db.prepare('INSERT INTO products (id, category_id, name_th, name_en, name_zh, description_th, description_en, description_zh, price, original_price, stock, type, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  const products = [
-    ['prod-otp-google', 'cat-otp', 'OTP Google/Gmail', 'OTP Google/Gmail', 'Google/Gmail 验证码', 'เบอร์โทรสำหรับรับ SMS ยืนยัน Google', 'Phone number for Google SMS verification', '用于Google短信验证的手机号', 5, 10, 50, 'otp', 1],
-    ['prod-otp-facebook', 'cat-otp', 'OTP Facebook', 'OTP Facebook', 'Facebook 验证码', 'เบอร์โทรสำหรับรับ SMS ยืนยัน Facebook', 'Phone number for Facebook SMS verification', '用于Facebook短信验证的手机号', 8, 15, 30, 'otp', 2],
-    ['prod-otp-instagram', 'cat-otp', 'OTP Instagram', 'OTP Instagram', 'Instagram 验证码', 'เบอร์โทรสำหรับรับ SMS ยืนยัน Instagram', 'Phone number for Instagram SMS verification', '用于Instagram短信验证的手机号', 10, 20, 25, 'otp', 3],
-    ['prod-netflix-week', 'cat-premium', 'Netflix รายสัปดาห์', 'Netflix Weekly', 'Netflix 周会员', 'แอคเคาท์ Netflix ใช้ได้ 7 วัน', 'Netflix account valid for 7 days', 'Netflix账号可用7天', 49, 99, 100, 'account', 1],
-    ['prod-youtube-month', 'cat-premium', 'YouTube Premium รายเดือน', 'YouTube Premium Monthly', 'YouTube Premium 月会员', 'YouTube Premium รายเดือน', 'YouTube Premium monthly', 'YouTube Premium 月度会员', 59, 159, 80, 'account', 2],
-    ['prod-chatgpt', 'cat-ai', 'ChatGPT Plus รายเดือน', 'ChatGPT Plus Monthly', 'ChatGPT Plus 月会员', 'ChatGPT Plus ใช้ GPT-4', 'ChatGPT Plus with GPT-4 access', 'ChatGPT Plus 使用GPT-4', 199, 690, 20, 'account', 1],
-    ['prod-claude', 'cat-ai', 'Claude Pro รายเดือน', 'Claude Pro Monthly', 'Claude Pro 月会员', 'Claude Pro รายเดือน', 'Claude Pro monthly subscription', 'Claude Pro 月度订阅', 179, 600, 15, 'account', 2],
-    ['prod-rov-100', 'cat-games', 'ROV 100 เพชร', 'ROV 100 Diamonds', 'ROV 100钻石', 'เติมเพชร ROV 100 เม็ด', 'Top up 100 ROV diamonds', '充值ROV 100钻石', 30, 35, 999, 'game', 1],
-    ['prod-ff-310', 'cat-games', 'FreeFire 310 เพชร', 'FreeFire 310 Diamonds', 'FreeFire 310钻石', 'เติมเพชร FreeFire 310 เม็ด', 'Top up 310 FreeFire diamonds', '充值FreeFire 310钻石', 89, 100, 999, 'game', 2],
-    ['prod-ais-50', 'cat-mobile', 'เติมเงิน AIS 50 บาท', 'AIS Top-up 50 THB', 'AIS充值50泰铢', 'เติมเงินมือถือ AIS 50 บาท', 'AIS mobile top-up 50 THB', 'AIS手机充值50泰铢', 48, 50, 999, 'mobile', 1],
-  ];
-  for (const p of products) {
-    insertProd.run(...p);
-  }
-}
+// Demo products removed — add products via Admin > Products
+// This ensures the store starts clean with only real products
 
 // Seed default settings
 const settingsCount = db.prepare('SELECT COUNT(*) as c FROM settings').get() as { c: number };
