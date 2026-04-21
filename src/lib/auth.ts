@@ -2,9 +2,16 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
+import crypto from 'crypto';
 import db from './db';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'payotp-secret-change-in-production-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.warn('[SECURITY] JWT_SECRET not set in environment! Using fallback (not recommended for production)');
+}
+
+const secret = JWT_SECRET || 'payotp-fallback-secret-' + crypto.randomBytes(16).toString('hex');
 
 export interface User {
   id: string;
@@ -30,14 +37,14 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 export function generateToken(user: User): string {
   return jwt.sign(
     { id: user.id, username: user.username, role: user.role },
-    JWT_SECRET,
+    secret,
     { expiresIn: '7d' }
   );
 }
 
 export function verifyToken(token: string): { id: string; username: string; role: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { id: string; username: string; role: string };
+    return jwt.verify(token, secret) as { id: string; username: string; role: string };
   } catch {
     return null;
   }

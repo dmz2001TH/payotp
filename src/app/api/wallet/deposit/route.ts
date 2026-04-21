@@ -4,6 +4,8 @@ import { getUserFromRequest, generateReferenceCode } from '@/lib/auth';
 import { generatePromptPayQR, generateUniqueAmount, generateTrueMoneyLink } from '@/lib/qr';
 import { v4 as uuidv4 } from 'uuid';
 import QRCode from 'qrcode';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
+import { depositSchema, validateRequest, validationErrorResponse } from '@/lib/validate';
 
 export async function POST(req: NextRequest) {
   const user = await getUserFromRequest(req);
@@ -12,13 +14,23 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { amount, method } = await req.json();
+    // Rate limit per user
+    const rl = checkRateLimit(`user:${user.id}`, RATE_LIMITS.deposit);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please wait.' }, { status: 429 });
+    }
+
+    const body = await req.json();
+    const validation = validateRequest(depositSchema, body);
+    if (!validation.success) return validationErrorResponse(validation.error);
+
+    const { amount, method } = validation.data;
 
     const minDeposit = parseFloat(
       (db.prepare('SELECT value FROM settings WHERE key = ?').get('min_deposit') as any)?.value || '50'
     );
 
-    if (!amount || amount < minDeposit) {
+    if (amount < minDeposit) {
       return NextResponse.json({ error: `เติมขั้นต่ำ ${minDeposit} บาท / Minimum deposit ${minDeposit} THB` }, { status: 400 });
     }
 

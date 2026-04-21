@@ -1,13 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
+import { smsConfirmSchema, validateRequest, validationErrorResponse } from '@/lib/validate';
 
 // SMS Listener webhook - called by phone when it detects a bank deposit
+// Requires API key for security
 export async function POST(req: NextRequest) {
   try {
-    const { amount, timestamp } = await req.json();
+    // Rate limit
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+    const rl = checkRateLimit(ip, RATE_LIMITS.sms);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 });
+    }
 
-    if (!amount) {
-      return NextResponse.json({ error: 'Missing amount' }, { status: 400 });
+    const body = await req.json();
+    const validation = validateRequest(smsConfirmSchema, body);
+    if (!validation.success) return validationErrorResponse(validation.error);
+
+    const { amount, api_key } = validation.data;
+
+    // Verify API key
+    const configuredKey = (db.prepare('SELECT value FROM settings WHERE key = ?').get('sms_webhook_key') as any)?.value;
+    if (configuredKey && api_key !== configuredKey) {
+      return NextResponse.json({ error: 'Invalid API key' }, { status: 403 });
     }
 
     // Find pending deposit with matching amount

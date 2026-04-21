@@ -125,6 +125,30 @@ db.exec(`
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS coupons (
+    id TEXT PRIMARY KEY,
+    code TEXT UNIQUE NOT NULL,
+    discount_type TEXT DEFAULT 'percent',
+    discount_value REAL NOT NULL,
+    min_order REAL DEFAULT 0,
+    max_uses INTEGER DEFAULT 0,
+    used_count INTEGER DEFAULT 0,
+    active INTEGER DEFAULT 1,
+    expires_at TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS coupon_uses (
+    id TEXT PRIMARY KEY,
+    coupon_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    order_id TEXT,
+    discount REAL NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (coupon_id) REFERENCES coupons(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
 `);
 
 // Seed default categories
@@ -183,6 +207,10 @@ if (settingsCount.c === 0) {
   insertSetting.run('referral_commission', '5');
   insertSetting.run('otp_api_provider', 'sms-activate');
   insertSetting.run('otp_api_key', '');
+  insertSetting.run('sms_webhook_key', '');
+  insertSetting.run('gbprimepay_token', '');
+  insertSetting.run('gbprimepay_api_key', '');
+  insertSetting.run('sms_activate_api_key', '');
 }
 
 export default db;

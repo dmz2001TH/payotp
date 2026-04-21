@@ -1,14 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { verifyPassword, generateToken } from '@/lib/auth';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
+import { loginSchema, validateRequest, validationErrorResponse } from '@/lib/validate';
 
 export async function POST(req: NextRequest) {
   try {
-    const { username, password } = await req.json();
-
-    if (!username || !password) {
-      return NextResponse.json({ error: 'กรุณากรอกข้อมูลให้ครบ / Please fill all fields' }, { status: 400 });
+    // Rate limit by IP
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
+    const rl = checkRateLimit(ip, RATE_LIMITS.auth);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
     }
+
+    const body = await req.json();
+    const validation = validateRequest(loginSchema, body);
+    if (!validation.success) return validationErrorResponse(validation.error);
+
+    const { username, password } = validation.data;
 
     const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, username) as any;
     if (!user) {
@@ -37,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     response.cookies.set('token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60,
       path: '/',

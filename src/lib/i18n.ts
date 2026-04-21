@@ -127,6 +127,27 @@ const translations: Record<string, Record<Lang, string>> = {
   // Order
   'order.total': { th: 'รวม', en: 'Total', zh: '总计' },
   'order.quantity': { th: 'จำนวน', en: 'Quantity', zh: '数量' },
+
+  // OTP
+  'otp.buy': { th: 'ซื้อเบอร์', en: 'Buy Number', zh: '购买号码' },
+  'otp.check': { th: 'เช็ค SMS', en: 'Check SMS', zh: '查收短信' },
+  'otp.cancel': { th: 'ยกเลิก', en: 'Cancel', zh: '取消' },
+  'otp.waiting': { th: 'รอ SMS...', en: 'Waiting for SMS...', zh: '等待短信中...' },
+  'otp.received': { th: 'ได้รับ SMS แล้ว', en: 'SMS Received', zh: '已收到短信' },
+  'otp.selectService': { th: 'เลือกบริการ', en: 'Select Service', zh: '选择服务' },
+
+  // Coupon
+  'coupon.code': { th: 'รหัสคูปอง', en: 'Coupon Code', zh: '优惠码' },
+  'coupon.apply': { th: 'ใช้คูปอง', en: 'Apply', zh: '使用' },
+  'coupon.invalid': { th: 'คูปองไม่ถูกต้อง', en: 'Invalid coupon', zh: '无效优惠码' },
+  'coupon.applied': { th: 'ใช้คูปองแล้ว', en: 'Coupon applied', zh: '已使用优惠码' },
+
+  // Admin
+  'admin.settings': { th: 'ตั้งค่า', en: 'Settings', zh: '设置' },
+  'admin.coupons': { th: 'คูปอง', en: 'Coupons', zh: '优惠券' },
+  'admin.analytics': { th: 'สถิติ', en: 'Analytics', zh: '分析' },
+  'admin.lowStock': { th: 'สินค้าใกล้หมด', en: 'Low Stock', zh: '库存不足' },
+  'admin.csvImport': { th: 'นำเข้า CSV', en: 'CSV Import', zh: 'CSV导入' },
 };
 
 export function t(key: string, lang: Lang = 'th'): string {

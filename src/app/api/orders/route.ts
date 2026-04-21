@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rateLimit';
+import { createOrderSchema, validateRequest, validationErrorResponse } from '@/lib/validate';
 
 export async function POST(req: NextRequest) {
   const user = await getUserFromRequest(req);
@@ -10,7 +12,17 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { productId } = await req.json();
+    // Rate limit per user
+    const rl = checkRateLimit(`user:${user.id}`, RATE_LIMITS.purchase);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please wait.' }, { status: 429 });
+    }
+
+    const body = await req.json();
+    const validation = validateRequest(createOrderSchema, body);
+    if (!validation.success) return validationErrorResponse(validation.error);
+
+    const { productId } = validation.data;
 
     const product = db.prepare('SELECT * FROM products WHERE id = ? AND active = 1').get(productId) as any;
     if (!product) {
@@ -66,7 +78,7 @@ export async function POST(req: NextRequest) {
           const commission = product.price * referral.commission_rate;
           db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?').run(commission, referrer.referred_by);
           db.prepare('UPDATE referrals SET total_earned = total_earned + ? WHERE id = ?').run(commission, referral.id);
-          
+
           const txId = uuidv4();
           db.prepare('INSERT INTO referral_transactions (id, referral_id, order_id, commission) VALUES (?, ?, ?, ?)')
             .run(txId, referral.id, orderId, commission);
@@ -100,14 +112,27 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const orders = db.prepare(`
-      SELECT o.*, p.name_th, p.name_en, p.name_zh, p.type
-      FROM orders o
-      JOIN products p ON o.product_id = p.id
-      WHERE o.user_id = ?
-      ORDER BY o.created_at DESC
-      LIMIT 100
-    `).all(user.id);
+    // Admin sees all orders, users see only their own
+    let orders;
+    if (user.role === 'admin') {
+      orders = db.prepare(`
+        SELECT o.*, p.name_th, p.name_en, p.name_zh, p.type, u.username
+        FROM orders o
+        JOIN products p ON o.product_id = p.id
+        JOIN users u ON o.user_id = u.id
+        ORDER BY o.created_at DESC
+        LIMIT 200
+      `).all();
+    } else {
+      orders = db.prepare(`
+        SELECT o.*, p.name_th, p.name_en, p.name_zh, p.type
+        FROM orders o
+        JOIN products p ON o.product_id = p.id
+        WHERE o.user_id = ?
+        ORDER BY o.created_at DESC
+        LIMIT 100
+      `).all(user.id);
+    }
 
     return NextResponse.json({ orders });
   } catch (error: any) {
