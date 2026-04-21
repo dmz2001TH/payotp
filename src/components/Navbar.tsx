@@ -64,7 +64,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -75,13 +75,13 @@ export default function Navbar() {
                 </Link>
               ))}
               {user && (
-                <Link href="/dashboard/wallet" className={`nav-link ${pathname.startsWith('/dashboard') ? 'text-[var(--primary)]' : ''}`}>
-                  {t('nav.dashboard', lang)}
+                <Link href="/dashboard/wallet" className={`nav-link ${pathname.startsWith('/dashboard') ? 'text-[var(--primary)] font-bold' : ''}`}>
+                  💳 {t('nav.dashboard', lang)}
                 </Link>
               )}
               {user?.role === 'admin' && (
                 <Link href="/admin" className={`nav-link ${pathname.startsWith('/admin') ? 'text-[var(--primary)] font-bold' : ''}`}>
-                  {t('nav.admin', lang)}
+                  🔧 {t('nav.admin', lang)}
                 </Link>
               )}
             </div>
@@ -153,6 +153,15 @@ export default function Navbar() {
                         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Balance</p>
                         <p className="text-xl font-extrabold" style={{ color: 'var(--primary)', textShadow: '0 0 10px oklch(0.78 0.16 235 / 0.4)' }}>฿{user.balance?.toFixed(2)}</p>
                       </div>
+                      <Link href="/dashboard/wallet" onClick={() => setShowMenu(false)} className="flex items-center gap-2 w-full px-3 py-2.5 text-sm font-semibold rounded-lg transition-all hover:bg-[oklch(0.78_0.16_235_/_0.1)]" style={{ color: 'var(--primary)' }}>
+                        🏠 {t('nav.dashboard', lang)}
+                      </Link>
+                      {user?.role === 'admin' && (
+                        <Link href="/admin" onClick={() => setShowMenu(false)} className="flex items-center gap-2 w-full px-3 py-2.5 text-sm font-semibold rounded-lg transition-all hover:bg-[oklch(0.78_0.16_235_/_0.1)]" style={{ color: 'var(--primary)' }}>
+                          🔧 {t('nav.admin', lang)}
+                        </Link>
+                      )}
+                      <div className="divider-modern my-1" />
                       <Link href="/dashboard/wallet" onClick={() => setShowMenu(false)} className="flex items-center gap-2 w-full px-3 py-2.5 text-sm rounded-lg transition-all hover:bg-[oklch(1_0_0_/_0.06)]">
                         💳 {t('nav.wallet', lang)}
                       </Link>
@@ -186,7 +195,7 @@ export default function Navbar() {
               {/* Mobile hamburger */}
               <button
                 onClick={() => setShowMobile(!showMobile)}
-                className="lg:hidden btn-ghost-modern px-2"
+                className="md:hidden btn-ghost-modern px-2"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {showMobile ? (
@@ -203,7 +212,7 @@ export default function Navbar() {
 
       {/* Mobile menu overlay */}
       {showMobile && (
-        <div className="fixed inset-0 z-[999] lg:hidden" onClick={() => setShowMobile(false)}>
+        <div className="fixed inset-0 z-[999] md:hidden" onClick={() => setShowMobile(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
           <div
             className="absolute top-16 left-0 right-0 card-modern mx-3 p-4 animate-fade-in"
@@ -222,6 +231,17 @@ export default function Navbar() {
               {user && (
                 <>
                   <Link href="/dashboard/wallet" onClick={() => setShowMobile(false)}
+                    className="block px-4 py-3 rounded-lg text-sm font-semibold transition-all hover:bg-[oklch(0.78_0.16_235_/_0.1)]" style={{ color: 'var(--primary)' }}>
+                    🏠 {t('nav.dashboard', lang)}
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link href="/admin" onClick={() => setShowMobile(false)}
+                      className="block px-4 py-3 rounded-lg text-sm font-semibold transition-all hover:bg-[oklch(0.78_0.16_235_/_0.1)]" style={{ color: 'var(--primary)' }}>
+                      🔧 {t('nav.admin', lang)}
+                    </Link>
+                  )}
+                  <div className="divider-modern my-1" />
+                  <Link href="/dashboard/wallet" onClick={() => setShowMobile(false)}
                     className="block px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-[oklch(1_0_0_/_0.06)]" style={{ color: 'var(--text-secondary)' }}>
                     💳 {t('nav.wallet', lang)}
                   </Link>
@@ -229,13 +249,11 @@ export default function Navbar() {
                     className="block px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-[oklch(1_0_0_/_0.06)]" style={{ color: 'var(--text-secondary)' }}>
                     📦 {t('order.history', lang)}
                   </Link>
+                  <Link href="/dashboard/affiliate" onClick={() => setShowMobile(false)}
+                    className="block px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-[oklch(1_0_0_/_0.06)]" style={{ color: 'var(--text-secondary)' }}>
+                    👥 {t('affiliate.title', lang)}
+                  </Link>
                 </>
-              )}
-              {user?.role === 'admin' && (
-                <Link href="/admin" onClick={() => setShowMobile(false)}
-                  className="block px-4 py-3 rounded-lg text-sm font-medium transition-all hover:bg-[oklch(1_0_0_/_0.06)]" style={{ color: 'var(--primary)' }}>
-                  🔧 {t('nav.admin', lang)}
-                </Link>
               )}
 
               <div className="divider-modern" />
