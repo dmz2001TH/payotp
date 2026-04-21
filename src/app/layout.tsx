@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "PayOTP - OTP, Premium Accounts, Game Top-up",
-  description: "ถูกที่สุด ส่งทันที 24 ชม. | Cheapest & Instant Delivery 24/7",
+  title: "PayOTP - OTP, Premium Accounts, Game Top-up | ราคาถูกที่สุด ส่งทันที",
+  description: "⚡ ครบจบที่เดียว! รับ OTP ทุกแอป • Netflix ChatGPT Claude ราคาถูก • เติมเกม ROV FreeFire • ปั๊มฟอล • ระบบออโต้ 24 ชม. ปลอดภัย 100%",
 };
 
 export default function RootLayout({

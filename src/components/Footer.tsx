@@ -14,7 +14,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer style={{ background: 'var(--bg-surface)', borderTop: '1px solid var(--border)' }} className="mt-20">
+    <footer className="footer-modern mt-20">
       {/* Features Bar */}
       <div style={{ borderBottom: '1px solid var(--border)' }}>
         <div className="container-app py-8">
@@ -22,9 +22,7 @@ export default function Footer() {
             {features.map((f, i) => (
               <div key={i} className="flex items-center gap-3 justify-center md:justify-start">
                 <span className="text-2xl">{f.icon}</span>
-                <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                  {f.label}
-                </span>
+                <span className="text-sm font-semibold text-[var(--text-secondary)]">{f.label}</span>
               </div>
             ))}
           </div>
@@ -37,12 +35,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center text-white font-bold text-sm">
+              <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center text-white font-bold text-sm" style={{ boxShadow: '0 0 10px rgba(99,102,241,0.3)' }}>
                 P
               </div>
-              <span className="text-lg font-extrabold gradient-text">PayOTP</span>
+              <span className="text-lg font-extrabold text-white">PayOTP<span className="text-[var(--accent)]">.COM</span></span>
             </div>
-            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)', maxWidth: '320px' }}>
+            <p className="text-sm mb-4 text-[var(--text-muted)] max-w-xs">
               {lang === 'th'
                 ? 'แพลตฟอร์มจำหน่าย OTP, แอคเคาท์พรีเมียม, AI Tools และเติมเกม ราคาถูกที่สุด ส่งทันที 24 ชม.'
                 : lang === 'en'
@@ -50,43 +48,38 @@ export default function Footer() {
                 : 'OTP、高级账号、AI工具和游戏充值平台。最低价，24/7即时送达。'}
             </p>
             <div className="flex items-center gap-3">
-              <span className="badge badge-success">
-                <span className="stock-dot stock-dot-high"></span>
-                {lang === 'th' ? 'ออนไลน์' : 'Online'}
+              <span className="badge-modern badge-success-modern">
+                <span className="stock-dot stock-dot-high" /> {lang === 'th' ? 'ออนไลน์' : 'Online'}
               </span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+            <h4 className="text-sm font-bold mb-3 text-white">
               {lang === 'th' ? 'ลิงก์ด่วน' : lang === 'en' ? 'Quick Links' : '快速链接'}
             </h4>
             <div className="space-y-2">
-              <Link href="/products" className="block text-sm hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text-muted)' }}>
-                {t('nav.products', lang)}
-              </Link>
-              <Link href="/auth" className="block text-sm hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text-muted)' }}>
-                {t('nav.login', lang)}
-              </Link>
-              <Link href="/auth?mode=register" className="block text-sm hover:text-[var(--primary)] transition-colors" style={{ color: 'var(--text-muted)' }}>
-                {t('nav.register', lang)}
-              </Link>
+              {[
+                { href: '/products', label: t('nav.products', lang) },
+                { href: '/auth', label: t('nav.login', lang) },
+                { href: '/auth?mode=register', label: t('nav.register', lang) },
+              ].map((link) => (
+                <Link key={link.href} href={link.href} className="block text-sm text-[var(--text-muted)] hover:text-[var(--primary-hover)] transition-colors">
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+            <h4 className="text-sm font-bold mb-3 text-white">
               {lang === 'th' ? 'ติดต่อเรา' : lang === 'en' ? 'Contact' : '联系我们'}
             </h4>
-            <div className="space-y-2">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                📧 support@payotp.com
-              </p>
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                💬 LINE: @payotp
-              </p>
+            <div className="space-y-2 text-sm text-[var(--text-muted)]">
+              <p>📧 support@payotp.com</p>
+              <p>💬 LINE: @payotp</p>
             </div>
           </div>
         </div>
@@ -95,7 +88,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div style={{ borderTop: '1px solid var(--border)' }}>
         <div className="container-app py-4">
-          <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-center text-xs text-[var(--text-muted)]">
             © 2024 PayOTP. {lang === 'th' ? 'สงวนลิขสิทธิ์' : lang === 'en' ? 'All rights reserved' : '版权所有'}
           </p>
         </div>
