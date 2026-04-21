@@ -51,67 +51,98 @@ export default function HomePage() {
       .catch(() => setLoaded(true));
   }, []);
 
-  // Auto-slide
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSlideIndex((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    const timer = setInterval(() => setSlideIndex((prev) => (prev + 1) % slides.length), 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
   const getName = (item: any) => item[`name_${lang}`] || item.name_th;
   const getDesc = (item: any) => item[`description_${lang}`] || item.description_th || '';
-
   const currentSlide = slides[slideIndex];
 
   return (
     <div>
       {/* ============ HERO BANNER ============ */}
-      <section className="hero-banner" style={{ minHeight: '480px' }}>
-        <div className="container-app hero-content text-center py-20 md:py-28">
+      <section className="hero-banner" style={{ minHeight: '560px' }}>
+        <div className="container-app hero-content text-center pt-16 pb-24 md:pt-24 md:pb-32">
           {/* Online badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[rgba(34,197,94,0.15)] text-sm font-medium mb-6 text-[var(--success)]">
-            <span className="w-2 h-2 rounded-full bg-[var(--success)] animate-pulse" />
-            {lang === 'th' ? 'ออนไลน์แล้ว — ระบบพร้อมบริการ' : lang === 'en' ? 'Online — System Ready' : '在线 — 系统就绪'}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6"
+            style={{
+              background: 'oklch(0.74 0.18 152 / 0.15)',
+              color: 'var(--success)',
+              border: '1px solid oklch(0.74 0.18 152 / 0.4)',
+            }}
+          >
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--success)' }} />
+            {lang === 'th' ? 'ออนไลน์แล้ว — ระบบพร้อมบริการ 24 ชั่วโมง' : lang === 'en' ? 'Online — System Ready 24/7' : '在线 — 系统全天候就绪'}
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 whitespace-pre-line text-white" key={slideIndex} style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            {currentSlide.title}
+          <h1
+            key={slideIndex}
+            className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 whitespace-pre-line tracking-tight"
+            style={{ animation: 'fadeIn 0.6s ease-out' }}
+          >
+            {currentSlide.title.split('\n').map((line, i) => (
+              <span key={i} className="block">
+                {i === 1 ? (
+                  <span
+                    style={{
+                      background: 'var(--gradient-primary)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 24px oklch(0.78 0.16 235 / 0.5))',
+                    }}
+                  >
+                    {line}
+                  </span>
+                ) : (
+                  line
+                )}
+              </span>
+            ))}
           </h1>
-          <p className="text-base md:text-lg text-white/60 mb-8 max-w-xl mx-auto" style={{ animation: 'fadeIn 0.5s ease-out 0.1s both' }}>
+
+          <p className="text-base md:text-lg mb-9 max-w-2xl mx-auto" style={{ color: 'oklch(1 0 0 / 0.7)', animation: 'fadeIn 0.6s ease-out 0.1s both' }}>
             {currentSlide.subtitle}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-8" style={{ animation: 'fadeIn 0.5s ease-out 0.2s both' }}>
-            <Link href="/products" className="btn-neon btn-neon-1 text-base px-8 py-3.5">
-              {currentSlide.cta} →
+          <div className="flex flex-wrap justify-center gap-3 mb-10" style={{ animation: 'fadeIn 0.6s ease-out 0.2s both' }}>
+            <Link href="/products" className="btn-neon px-7 py-3.5 text-base">
+              {currentSlide.cta}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </Link>
-            {!false && (
-              <Link href="/auth?mode=register" className="btn-neon px-8 py-3.5 text-base" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'white' }}>
-                {t('nav.register', lang)}
-              </Link>
-            )}
+            <Link href="/auth?mode=register" className="btn-neon btn-neon-ghost px-7 py-3.5 text-base">
+              {t('nav.register', lang)}
+            </Link>
           </div>
 
           {/* Slide dots */}
           <div className="flex justify-center gap-2">
             {slides.map((_, i) => (
-              <button key={i} onClick={() => setSlideIndex(i)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${i === slideIndex ? 'bg-[var(--primary)] w-8' : 'bg-white/20'}`} />
+              <button
+                key={i}
+                onClick={() => setSlideIndex(i)}
+                aria-label={`Slide ${i + 1}`}
+                className="h-2.5 rounded-full transition-all"
+                style={{
+                  width: i === slideIndex ? '32px' : '10px',
+                  background: i === slideIndex ? 'var(--gradient-primary)' : 'oklch(1 0 0 / 0.25)',
+                  boxShadow: i === slideIndex ? 'var(--shadow-neon)' : 'none',
+                }}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ============ SERVICE GRID (6 icons like OTP24HR) ============ */}
-      <section className="container-app py-10 -mt-6 relative z-10">
+      {/* ============ SERVICE GRID ============ */}
+      <section className="container-app py-10 -mt-12 relative z-10">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
           {services.map((s) => (
             <Link key={s.href} href={s.href} className="recommend-menu">
-              <div className="icon-menu text-3xl md:text-4xl">{s.icon}</div>
-              <div className="title mt-2">
-                {s[`label_${lang}` as keyof typeof s]}
-              </div>
+              <div className="icon-menu">{s.icon}</div>
+              <div className="title mt-2.5">{s[`label_${lang}` as keyof typeof s]}</div>
             </Link>
           ))}
         </div>
@@ -119,7 +150,7 @@ export default function HomePage() {
 
       {/* ============ OTP SECTION ============ */}
       <section className="container-app py-12">
-        <div className="section-header flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-7">
           <div className="flex-1">
             <h2 className="section-title">
               {lang === 'th' ? '📱 บริการ OTP' : lang === 'en' ? '📱 OTP Services' : '📱 OTP 服务'}
@@ -129,8 +160,9 @@ export default function HomePage() {
             </p>
             <div className="section-divider" />
           </div>
-          <Link href="/products?category=otp" className="btn-primary-modern text-sm hidden md:inline-flex">
-            {lang === 'th' ? 'ดูทั้งหมด' : 'View All'} →
+          <Link href="/products?category=otp" className="hidden md:inline-flex items-center gap-2 text-sm font-semibold hover:gap-3 transition-all" style={{ color: 'var(--primary)' }}>
+            {lang === 'th' ? 'ดูทั้งหมด' : 'View All'}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           </Link>
         </div>
 
@@ -144,49 +176,53 @@ export default function HomePage() {
                   </div>
                 )}
                 {p.image_url ? (
-                  <div className="overflow-hidden" style={{ height: '160px' }}>
+                  <div className="overflow-hidden" style={{ height: '170px' }}>
                     <img src={p.image_url} alt={getName(p)} className="product-card-img" />
                   </div>
                 ) : (
-                  <div className="w-full h-40 flex items-center justify-center text-5xl" style={{ background: 'var(--bg-elevated)' }}>
-                    {p.category_icon || '📦'}
+                  <div className="w-full flex items-center justify-center text-6xl" style={{ height: '170px', background: 'linear-gradient(135deg, oklch(0.24 0.05 250), oklch(0.18 0.04 250))' }}>
+                    <span style={{ filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.4))' }}>{p.category_icon || '📦'}</span>
                   </div>
                 )}
                 <div className="product-card-body">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="badge-modern badge-primary-modern">{p.category_icon} {p.category_slug}</span>
+                    <span className="badge-modern">{p.category_icon} {p.category_slug}</span>
                     {p.stock > 0 ? (
-                      <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                      <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
                         <span className={`stock-dot ${p.stock < 5 ? 'stock-dot-low' : 'stock-dot-high'}`} />
                         {t('product.stock', lang)} {p.stock}
                       </div>
                     ) : (
-                      <span className="badge-modern badge-danger-modern">{t('product.outOfStock', lang)}</span>
+                      <span className="badge-modern" style={{ background: 'oklch(0.65 0.22 22 / 0.15)', color: 'var(--danger)', borderColor: 'oklch(0.65 0.22 22 / 0.3)' }}>{t('product.outOfStock', lang)}</span>
                     )}
                   </div>
-                  <h3 className="font-bold text-sm mb-1">{getName(p)}</h3>
-                  <p className="text-xs text-[var(--text-muted)] line-clamp-2">{getDesc(p)}</p>
+                  <h3 className="font-bold text-base mb-1">{getName(p)}</h3>
+                  <p className="text-xs line-clamp-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{getDesc(p)}</p>
                 </div>
                 <div className="product-card-footer">
                   <div className="flex items-baseline gap-2">
-                    <span className="price-modern text-base">฿{p.price}</span>
+                    <span className="price-modern text-lg">฿{p.price}</span>
                     {p.original_price && <span className="price-original-modern">฿{p.original_price}</span>}
                   </div>
-                  <span className="btn-neon btn-neon-accent text-xs px-4 py-2">
-                    {t('product.buy', lang)}
-                  </span>
+                  <span className="btn-neon text-xs px-4 py-2">{t('product.buy', lang)}</span>
                 </div>
               </Link>
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1,2,3].map(i => <div key={i} className="card-modern p-5"><div className="skeleton-modern h-40 mb-3" /><div className="skeleton-modern h-5 w-3/4 mb-2" /><div className="skeleton-modern h-3 w-full" /></div>)}
+            {[1,2,3].map(i => (
+              <div key={i} className="card p-5">
+                <div className="skeleton h-40 mb-3" />
+                <div className="skeleton h-5 w-3/4 mb-2" />
+                <div className="skeleton h-3 w-full" />
+              </div>
+            ))}
           </div>
         )}
 
         <div className="text-center mt-6 md:hidden">
-          <Link href="/products?category=otp" className="btn-secondary-modern">
+          <Link href="/products?category=otp" className="btn-secondary">
             {lang === 'th' ? 'ดูทั้งหมด →' : 'View All →'}
           </Link>
         </div>
@@ -195,14 +231,16 @@ export default function HomePage() {
       {/* ============ SERVICE CATEGORIES ============ */}
       {categories.length > 0 && (
         <section className="container-app py-12">
-          <div className="section-header">
-            <h2 className="section-title">
-              {lang === 'th' ? '🛍️ บริการของเรา' : lang === 'en' ? '🛍️ Our Services' : '🛍️ 我们的服务'}
-            </h2>
-            <p className="section-subtitle">
-              {lang === 'th' ? 'เลือกบริการที่คุณต้องการ' : lang === 'en' ? 'Choose what you need' : '选择您需要的服务'}
-            </p>
-            <div className="section-divider" />
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-7">
+            <div className="flex-1">
+              <h2 className="section-title">
+                {lang === 'th' ? '🛍️ บริการของเรา' : lang === 'en' ? '🛍️ Our Services' : '🛍️ 我们的服务'}
+              </h2>
+              <p className="section-subtitle">
+                {lang === 'th' ? 'เลือกบริการที่คุณต้องการ' : lang === 'en' ? 'Choose what you need' : '选择您需要的服务'}
+              </p>
+              <div className="section-divider" />
+            </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             {categories.map((cat: any) => (
@@ -218,14 +256,19 @@ export default function HomePage() {
       {/* ============ POPULAR PRODUCTS ============ */}
       {products.length > 0 && (
         <section className="container-app py-12">
-          <div className="section-header flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-7">
             <div className="flex-1">
-              <h2 className="section-title">🔥 {lang === 'th' ? 'สินค้ายอดนิยม' : lang === 'en' ? 'Popular Products' : '热门商品'}</h2>
-              <p className="section-subtitle">{lang === 'th' ? 'สินค้าขายดีที่สุดของเรา' : lang === 'en' ? 'Our best-selling products' : '我们最畅销的商品'}</p>
+              <h2 className="section-title">
+                🔥 {lang === 'th' ? 'สินค้ายอดนิยม' : lang === 'en' ? 'Popular Products' : '热门商品'}
+              </h2>
+              <p className="section-subtitle">
+                {lang === 'th' ? 'สินค้าขายดีที่สุดของเรา' : lang === 'en' ? 'Our best-selling products' : '我们最畅销的商品'}
+              </p>
               <div className="section-divider" />
             </div>
-            <Link href="/products" className="btn-primary-modern text-sm hidden md:inline-flex">
-              {lang === 'th' ? 'ดูทั้งหมด' : 'View All'} →
+            <Link href="/products" className="hidden md:inline-flex items-center gap-2 text-sm font-semibold hover:gap-3 transition-all" style={{ color: 'var(--primary)' }}>
+              {lang === 'th' ? 'ดูทั้งหมด' : 'View All'}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
@@ -233,33 +276,33 @@ export default function HomePage() {
               <Link key={p.id} href="/products" className="product-card-modern relative">
                 {p.original_price && <div className="discount-circle">-{Math.round((1 - p.price / p.original_price) * 100)}%</div>}
                 {p.image_url ? (
-                  <div className="overflow-hidden" style={{ height: '160px' }}>
+                  <div className="overflow-hidden" style={{ height: '170px' }}>
                     <img src={p.image_url} alt={getName(p)} className="product-card-img" />
                   </div>
                 ) : (
-                  <div className="w-full h-40 flex items-center justify-center text-5xl" style={{ background: 'var(--bg-elevated)' }}>
-                    {p.category_icon || '📦'}
+                  <div className="w-full flex items-center justify-center text-6xl" style={{ height: '170px', background: 'linear-gradient(135deg, oklch(0.24 0.05 250), oklch(0.18 0.04 250))' }}>
+                    <span style={{ filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.4))' }}>{p.category_icon || '📦'}</span>
                   </div>
                 )}
                 <div className="product-card-body">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="badge-modern badge-primary-modern">{p.category_icon} {p.category_slug}</span>
+                    <span className="badge-modern">{p.category_icon} {p.category_slug}</span>
                     {p.stock > 0 ? (
-                      <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                      <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
                         <span className={`stock-dot ${p.stock < 5 ? 'stock-dot-low' : 'stock-dot-high'}`} />
                         {t('product.stock', lang)} {p.stock}
                       </div>
-                    ) : <span className="badge-modern badge-danger-modern">{t('product.outOfStock', lang)}</span>}
+                    ) : <span className="badge-modern" style={{ background: 'oklch(0.65 0.22 22 / 0.15)', color: 'var(--danger)', borderColor: 'oklch(0.65 0.22 22 / 0.3)' }}>{t('product.outOfStock', lang)}</span>}
                   </div>
-                  <h3 className="font-bold text-sm mb-1">{getName(p)}</h3>
-                  <p className="text-xs text-[var(--text-muted)] line-clamp-2">{getDesc(p)}</p>
+                  <h3 className="font-bold text-base mb-1">{getName(p)}</h3>
+                  <p className="text-xs line-clamp-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{getDesc(p)}</p>
                 </div>
                 <div className="product-card-footer">
                   <div className="flex items-baseline gap-2">
-                    <span className="price-modern text-base">฿{p.price}</span>
+                    <span className="price-modern text-lg">฿{p.price}</span>
                     {p.original_price && <span className="price-original-modern">฿{p.original_price}</span>}
                   </div>
-                  <span className="btn-neon btn-neon-accent text-xs px-4 py-2">{t('product.buy', lang)}</span>
+                  <span className="btn-neon text-xs px-4 py-2">{t('product.buy', lang)}</span>
                 </div>
               </Link>
             ))}
@@ -267,22 +310,32 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ============ FEATURES (like OTP24HR feature-item) ============ */}
-      <section className="container-app py-12">
-        <div className="section-header text-center">
-          <h2 className="section-title">{lang === 'th' ? '✨ ทำไมต้อง PayOTP?' : lang === 'en' ? '✨ Why Choose PayOTP?' : '✨ 为什么选择 PayOTP？'}</h2>
-          <div className="section-divider mx-auto" style={{ maxWidth: '200px' }} />
+      {/* ============ FEATURES ============ */}
+      <section className="container-app py-14">
+        <div className="text-center mb-10">
+          <h2 className="section-title">
+            {lang === 'th' ? '✨ ทำไมต้อง PayOTP?' : lang === 'en' ? '✨ Why Choose PayOTP?' : '✨ 为什么选择 PayOTP？'}
+          </h2>
+          <div className="section-divider mx-auto" style={{ marginInline: 'auto' }} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
           {[
             { icon: '⚡', title_th: 'ส่งอัตโนมัติ ทันที', title_en: 'Instant Auto Delivery', title_zh: '即时自动发货', desc_th: 'สินค้าส่งทันทีหลังจ่ายเงิน ไม่ต้องรอ ไม่ต้องทักแอดมิน', desc_en: 'Products delivered instantly after payment', desc_zh: '付款后即时发货，无需等待' },
-            { icon: '💰', title_th: 'ราคาถูกที่สุด', title_en: 'Lowest Prices', title_zh: '最低价格', desc_th: 'ราคาส่งจากจีนโดยตรง ถูกกว่าหน้าร้าน 30-60%', desc_en: 'Wholesale prices directly from China. 30-60% cheaper', desc_zh: '中国直供批发价，比零售便宜30-60%' },
+            { icon: '💰', title_th: 'ราคาถูกที่สุด', title_en: 'Lowest Prices', title_zh: '最低价格', desc_th: 'ราคาส่งจากผู้ผลิตโดยตรง ถูกกว่าหน้าร้าน 30-60%', desc_en: 'Wholesale prices directly. 30-60% cheaper', desc_zh: '直供批发价，比零售便宜30-60%' },
             { icon: '🔒', title_th: 'ปลอดภัย มั่นใจ', title_en: 'Safe & Secure', title_zh: '安全可靠', desc_th: 'ข้อมูลปลอดภัย SSL ชำระเงินผ่าน PromptPay ที่เชื่อถือได้', desc_en: 'SSL secured. Payment via trusted PromptPay', desc_zh: 'SSL加密保护，通过可信赖的PromptPay付款' },
           ].map((item, i) => (
             <div key={i} className="feature-item">
-              <div className="text-3xl mb-3">{item.icon}</div>
-              <h3 className="font-bold text-sm mb-2">{item[`title_${lang}` as keyof typeof item]}</h3>
-              <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item[`desc_${lang}` as keyof typeof item]}</p>
+              <div
+                className="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl"
+                style={{
+                  background: 'var(--gradient-primary)',
+                  boxShadow: 'var(--shadow-neon)',
+                }}
+              >
+                {item.icon}
+              </div>
+              <h3 className="font-bold text-base mb-2">{item[`title_${lang}` as keyof typeof item]}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{item[`desc_${lang}` as keyof typeof item]}</p>
             </div>
           ))}
         </div>
@@ -292,15 +345,15 @@ export default function HomePage() {
       <section className="container-app py-12">
         <div className="card-modern p-8 md:p-10">
           <div className="text-center mb-6">
-            <h2 className="text-xl font-extrabold mb-2">
+            <h2 className="text-2xl font-extrabold mb-2">
               💳 {lang === 'th' ? 'รองรับทุกธนาคาร' : lang === 'en' ? 'All Banks Supported' : '支持所有银行'}
             </h2>
-            <p className="text-sm text-[var(--text-muted)]">
-              {lang === 'th' ? 'เติมง่ายและรวดเร็ว ด้วยระบบ QR Code' : lang === 'en' ? 'Easy & fast top-up via QR Code' : '通过二维码轻松快速充值'}
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              {lang === 'th' ? 'เติมเงินง่ายและรวดเร็ว ด้วยระบบ QR Code PromptPay' : lang === 'en' ? 'Easy & fast top-up via QR Code PromptPay' : '通过二维码轻松快速充值'}
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {['PromptPay', 'กสิกร', 'ไทยพาณิชย์', 'กรุงไทย', 'กรุงเทพ', 'กรุงศรี', 'TrueMoney', 'ออมสิน'].map((bank) => (
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {['PromptPay', 'กสิกรไทย', 'ไทยพาณิชย์', 'กรุงไทย', 'กรุงเทพ', 'กรุงศรี', 'TrueMoney', 'ออมสิน'].map((bank) => (
               <div key={bank} className="payment-badge">{bank}</div>
             ))}
           </div>
@@ -309,19 +362,34 @@ export default function HomePage() {
 
       {/* ============ CTA ============ */}
       <section className="container-app py-16">
-        <div className="rounded-2xl p-10 md:p-14 text-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%)' }}>
-          <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'0.3\'%3E%3Cpath d=\'M0 0h20v20H0V0zm20 20h20v20H20V20z\'/%3E%3C/g%3E%3C/svg%3E")'
+        <div
+          className="rounded-3xl p-10 md:p-14 text-center relative overflow-hidden"
+          style={{
+            background: 'var(--gradient-cta)',
+            boxShadow: 'var(--shadow-elevated)',
+          }}
+        >
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'0.3\'%3E%3Cpath d=\'M0 0h20v20H0V0zm20 20h20v20H20V20z\'/%3E%3C/g%3E%3C/svg%3E")',
           }} />
           <div className="relative z-10">
-            <h2 className="text-2xl md:text-4xl font-extrabold mb-4 text-white">
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-white">
               {lang === 'th' ? 'พร้อมซื้อสินค้าราคาถูก?' : lang === 'en' ? 'Ready to Shop?' : '准备购物了吗？'}
             </h2>
-            <p className="text-white/80 mb-8 text-lg max-w-md mx-auto">
-              {lang === 'th' ? 'สมัครสมาชิกฟรี แล้วเริ่มซื้อสินค้าราคาถูกได้เลย' : lang === 'en' ? 'Register for free and start buying at the lowest prices' : '免费注册，立即开始低价购物'}
+            <p className="mb-8 text-base md:text-lg max-w-md mx-auto" style={{ color: 'oklch(1 0 0 / 0.85)' }}>
+              {lang === 'th' ? 'สมัครสมาชิกฟรี แล้วเริ่มซื้อสินค้าราคาถูกได้เลยวันนี้' : lang === 'en' ? 'Register for free and start buying at the lowest prices today' : '免费注册，立即开始低价购物'}
             </p>
-            <Link href="/auth?mode=register" className="btn-neon px-10 py-4 text-lg" style={{ background: 'white', color: '#4f46e5', fontWeight: 800, boxShadow: '0 0 30px rgba(255,255,255,0.3)' }}>
-              {t('auth.registerBtn', lang)} 🚀
+            <Link
+              href="/auth?mode=register"
+              className="inline-flex items-center gap-2 px-9 py-3.5 rounded-full text-base font-extrabold transition-transform hover:scale-105"
+              style={{
+                background: 'white',
+                color: 'oklch(0.4 0.16 240)',
+                boxShadow: '0 0 40px oklch(1 0 0 / 0.4)',
+              }}
+            >
+              {t('auth.registerBtn', lang)}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </Link>
           </div>
         </div>
