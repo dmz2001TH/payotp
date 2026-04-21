@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProvider } from "@/components/AppContext";
+import { ToastProvider } from "@/components/Toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -18,11 +19,13 @@ export default function RootLayout({
     <html lang="th" suppressHydrationWarning>
       <body className="min-h-screen">
         <AppProvider>
-          <Navbar />
-          <main className="min-h-[80vh]">
-            {children}
-          </main>
-          <Footer />
+          <ToastProvider>
+            <Navbar />
+            <main className="min-h-[80vh]">
+              {children}
+            </main>
+            <Footer />
+          </ToastProvider>
         </AppProvider>
       </body>
     </html>

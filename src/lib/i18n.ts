@@ -88,6 +88,45 @@ const translations: Record<string, Record<Lang, string>> = {
   'common.search': { th: 'ค้นหา', en: 'Search', zh: '搜索' },
   'common.back': { th: 'กลับ', en: 'Back', zh: '返回' },
   'common.all': { th: 'ทั้งหมด', en: 'All', zh: '全部' },
+  'common.copied': { th: 'คัดลอกแล้ว', en: 'Copied!', zh: '已复制' },
+  'common.noData': { th: 'ยังไม่มีรายการ', en: 'No data yet', zh: '暂无记录' },
+
+  // Toast messages
+  'toast.depositSuccess': { th: 'สร้างคำขอเติมเงินสำเร็จ', en: 'Deposit request created', zh: '充值请求已创建' },
+  'toast.depositConfirm': { th: 'ยืนยันการเติมเงินสำเร็จ', en: 'Deposit confirmed', zh: '充值已确认' },
+  'toast.buySuccess': { th: 'ซื้อสำเร็จ!', en: 'Purchase complete!', zh: '购买成功！' },
+  'toast.error': { th: 'เกิดข้อผิดพลาด', en: 'An error occurred', zh: '发生错误' },
+  'toast.loginRequired': { th: 'กรุณาเข้าสู่ระบบ', en: 'Please login first', zh: '请先登录' },
+  'toast.saveSuccess': { th: 'บันทึกสำเร็จ', en: 'Saved successfully', zh: '保存成功' },
+  'toast.deleteSuccess': { th: 'ลบสำเร็จ', en: 'Deleted successfully', zh: '删除成功' },
+  'toast.confirmSuccess': { th: 'ยืนยันสำเร็จ', en: 'Confirmed successfully', zh: '确认成功' },
+
+  // Dashboard
+  'dashboard.depositHistory': { th: 'ประวัติการเติมเงิน', en: 'Deposit History', zh: '充值历史' },
+  'dashboard.quickDeposit': { th: 'เติมเงินด่วน', en: 'Quick Deposit', zh: '快速充值' },
+  'dashboard.stats': { th: 'สถิติ', en: 'Statistics', zh: '统计' },
+  'dashboard.totalDeposits': { th: 'เติมเงินทั้งหมด', en: 'Total Deposits', zh: '总充值' },
+  'dashboard.totalOrders': { th: 'สั่งซื้อทั้งหมด', en: 'Total Orders', zh: '总订单' },
+  'dashboard.totalSpent': { th: 'ใช้จ่ายทั้งหมด', en: 'Total Spent', zh: '总消费' },
+  'dashboard.quickActions': { th: 'ทางลัด', en: 'Quick Actions', zh: '快捷操作' },
+  'dashboard.depositNow': { th: 'เติมเงินเลย', en: 'Deposit Now', zh: '立即充值' },
+  'dashboard.browseProducts': { th: 'ดูสินค้า', en: 'Browse Products', zh: '浏览商品' },
+
+  // Product search
+  'product.search': { th: 'ค้นหาสินค้า...', en: 'Search products...', zh: '搜索商品...' },
+  'product.searchResults': { th: 'ผลการค้นหา', en: 'Search Results', zh: '搜索结果' },
+  'product.noResults': { th: 'ไม่พบสินค้าที่ค้นหา', en: 'No products found', zh: '未找到商品' },
+  'product.tryOther': { th: 'ลองค้นหาคำอื่น', en: 'Try different keywords', zh: '尝试其他关键词' },
+
+  // Pagination
+  'pagination.prev': { th: 'ก่อนหน้า', en: 'Previous', zh: '上一页' },
+  'pagination.next': { th: 'ถัดไป', en: 'Next', zh: '下一页' },
+  'pagination.page': { th: 'หน้า', en: 'Page', zh: '第' },
+  'pagination.of': { th: 'จาก', en: 'of', zh: '/' },
+
+  // Order
+  'order.total': { th: 'รวม', en: 'Total', zh: '总计' },
+  'order.quantity': { th: 'จำนวน', en: 'Quantity', zh: '数量' },
 };
 
 export function t(key: string, lang: Lang = 'th'): string {
