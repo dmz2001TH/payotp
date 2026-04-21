@@ -39,13 +39,18 @@
 
 ## 🔧 TODO — สิ่งที่ต้องทำต่อ
 
-### Priority 1: ปรับปรุง UX/UI
-- [ ] **Mobile responsive** — บางหน้ายังไม่สวยบนมือถือ
-- [ ] **Loading states** — เพิ่ม skeleton loading ระหว่าง fetch
-- [ ] **Toast notifications** — แทนที่ alert/error text (ใช้ react-hot-hot หรือ sonner)
+### Priority 1: ปรับปรุง UX/UI (บางส่วนทำแล้ว)
+- [x] **Design system** — CSS design tokens, shadows, transitions, radius
+- [x] **Polished components** — Cards, buttons, inputs, badges, modals
+- [x] **Toast notification styles** — CSS ready (ต้อง add React component)
+- [x] **Skeleton loading styles** — CSS ready
+- [x] **Glass effect** — Backdrop blur support
+- [ ] **React toast component** — เชื่อม CSS toast กับ React state
+- [ ] **Mobile responsive** — บางหน้ายังไม่ perfect บนมือถือเล็ก
 - [ ] **Image support** — เพิ่มฟิลด์ image_url ใน products + upload UI
 - [ ] **Product search** — เพิ่ม search bar ในหน้า products
 - [ ] **Pagination** — สำหรับ orders, deposits, inventory lists
+- [ ] **Dashboard pages redesign** — wallet/orders/affiliate ยังใช้ design เก่า
 
 ### Priority 2: SMS Auto-Confirm (บน iQOO 12 5G)
 - [ ] **ติดตั้ง Termux** บนมือถือ + สร้าง SMS Listener script
