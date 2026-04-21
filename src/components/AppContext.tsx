@@ -10,6 +10,7 @@ interface AppContextType {
   user: any;
   setUser: (user: any) => void;
   fetchUser: () => Promise<void>;
+  authLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -20,12 +21,14 @@ const AppContext = createContext<AppContextType>({
   user: null,
   setUser: () => {},
   fetchUser: async () => {},
+  authLoading: true,
 });
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>('th');
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
   const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const savedLang = localStorage.getItem('payotp-lang') as Lang;
@@ -64,11 +67,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     } catch {
       setUser(null);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   return (
-    <AppContext.Provider value={{ lang, setLang, theme, toggleTheme, user, setUser, fetchUser }}>
+    <AppContext.Provider value={{ lang, setLang, theme, toggleTheme, user, setUser, fetchUser, authLoading }}>
       {children}
     </AppContext.Provider>
   );

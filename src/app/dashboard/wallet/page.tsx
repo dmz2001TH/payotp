@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function WalletPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [balance, setBalance] = useState(0);
@@ -18,9 +18,10 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push('/auth'); return; }
     loadData();
-  }, [user]);
+  }, [user, authLoading]);
 
   const loadData = async () => {
     try {

@@ -7,19 +7,20 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AffiliatePage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push('/auth'); return; }
     fetch('/api/affiliate')
       .then((r) => r.json())
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [user]);
+  }, [user, authLoading]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

@@ -8,10 +8,12 @@ import db from './db';
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  console.warn('[SECURITY] JWT_SECRET not set in environment! Using fallback (not recommended for production)');
+  console.warn('[SECURITY] JWT_SECRET not set in environment! Using stable fallback (not recommended for production)');
 }
 
-const secret = JWT_SECRET || 'payotp-fallback-secret-' + crypto.randomBytes(16).toString('hex');
+// Use a STABLE fallback so tokens survive server restarts in dev.
+// For production, always set JWT_SECRET env var.
+const secret = JWT_SECRET || 'payotp-dev-fallback-secret-do-not-use-in-prod';
 
 export interface User {
   id: string;

@@ -6,14 +6,15 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminOrdersPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user || user.role !== 'admin') { router.push('/'); return; }
     fetch('/api/orders').then(r => r.json()).then(data => setOrders(data.orders || []));
-  }, [user]);
+  }, [user, authLoading]);
 
   const getName = (o: any) => o[`name_${lang}`] || o.name_th;
 

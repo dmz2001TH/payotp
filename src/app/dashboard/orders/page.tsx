@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function OrdersPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
@@ -15,9 +15,10 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push('/auth'); return; }
     fetchOrders();
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchOrders = async () => {
     setLoading(true);

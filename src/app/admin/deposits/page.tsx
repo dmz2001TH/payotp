@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminDepositsPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [deposits, setDeposits] = useState<any[]>([]);
@@ -15,9 +15,10 @@ export default function AdminDepositsPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user || user.role !== 'admin') { router.push('/'); return; }
     loadDeposits();
-  }, [user, filter]);
+  }, [user, authLoading, filter]);
 
   const loadDeposits = async () => {
     const res = await fetch(`/api/admin/deposits?status=${filter}`);

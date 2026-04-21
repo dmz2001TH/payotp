@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminProductsPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
@@ -22,9 +22,10 @@ export default function AdminProductsPage() {
   });
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user || user.role !== 'admin') { router.push('/'); return; }
     loadData();
-  }, [user]);
+  }, [user, authLoading]);
 
   const loadData = async () => {
     const [prodRes, catRes] = await Promise.all([

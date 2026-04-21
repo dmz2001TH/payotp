@@ -6,14 +6,25 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const router = useRouter();
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, pendingDeposits: 0 });
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user || user.role !== 'admin') { router.push('/'); return; }
     loadStats();
-  }, [user]);
+  }, [user, authLoading]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (!user || user.role !== 'admin') return null;
 
   const loadStats = async () => {
     try {

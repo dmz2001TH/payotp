@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminInventoryPage() {
-  const { lang, user } = useApp();
+  const { lang, user, authLoading } = useApp();
   const toast = useToast();
   const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
@@ -17,9 +17,10 @@ export default function AdminInventoryPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user || user.role !== 'admin') { router.push('/'); return; }
     fetch('/api/admin/products').then(r => r.json()).then(data => setProducts(data.products || []));
-  }, [user]);
+  }, [user, authLoading]);
 
   const loadInventory = async (productId: string) => {
     if (!productId) { setInventory([]); return; }
