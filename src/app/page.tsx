@@ -4,149 +4,289 @@ import { useApp } from '@/components/AppContext';
 import { t, type Lang } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 
-const slogans: Record<Lang, string> = {
-  th: 'ถูกที่สุด ส่งทันที 24 ชม.',
-  en: 'Cheapest & Instant Delivery 24/7',
-  zh: '最便宜 即时送达 全天候',
+const heroData: Record<Lang, { title: string; subtitle: string; cta: string }> = {
+  th: {
+    title: 'OTP ราคาถูกที่สุด\nส่งทันที 24 ชม.',
+    subtitle: 'แอคเคาท์พรีเมียม • AI Tools • เติมเกม • ปั๊มฟอล',
+    cta: 'เริ่มซื้อเลย',
+  },
+  en: {
+    title: 'Cheapest OTP\nInstant Delivery 24/7',
+    subtitle: 'Premium Accounts • AI Tools • Game Top-up • Social Boost',
+    cta: 'Start Shopping',
+  },
+  zh: {
+    title: '最低价 OTP\n即时送达 24小时',
+    subtitle: '高级账号 • AI工具 • 游戏充值 • 涨粉涨赞',
+    cta: '开始购买',
+  },
 };
 
-const heroTitles: Record<Lang, string> = {
-  th: 'OTP • แอคเคาท์พรีเมียม • AI Tools • เติมเกม',
-  en: 'OTP • Premium Accounts • AI Tools • Game Top-up',
-  zh: 'OTP • 高级账号 • AI工具 • 游戏充值',
-};
-
-const features = [
-  { icon: '📱', key: 'otp', th: 'OTP เบอร์โทร', en: 'Phone OTP', zh: '电话验证码', desc_th: 'เบอร์จีนราคาถูก เริ่มต้น ฿1', desc_en: 'Chinese numbers starting at ฿1', desc_zh: '中国号码低至฿1' },
-  { icon: '⭐', key: 'premium', th: 'แอคเคาท์พรีเมียม', en: 'Premium Accounts', zh: '高级账号', desc_th: 'Netflix, YouTube, Disney+ ราคาส่ง', desc_en: 'Netflix, YouTube, Disney+ wholesale price', desc_zh: 'Netflix, YouTube, Disney+ 批发价' },
-  { icon: '🤖', key: 'ai', th: 'แอคเคาท์ AI', en: 'AI Accounts', zh: 'AI账号', desc_th: 'ChatGPT, Claude, Gemini ราคาถูก', desc_en: 'ChatGPT, Claude, Gemini cheap', desc_zh: 'ChatGPT, Claude, Gemini 低价' },
-  { icon: '🎮', key: 'games', th: 'เติมเกม', en: 'Game Top-up', zh: '游戏充值', desc_th: 'ROV, FreeFire, PUBG ราคาพิเศษ', desc_en: 'ROV, FreeFire, PUBG special price', desc_zh: 'ROV, FreeFire, PUBG 特价' },
-  { icon: '💳', key: 'cards', th: 'บัตรเติมเงิน', en: 'Gift Cards', zh: '礼品卡', desc_th: 'AIS, DTAC, TRUE, Garena', desc_en: 'AIS, DTAC, TRUE, Garena', desc_zh: 'AIS, DTAC, TRUE, Garena' },
-  { icon: '📈', key: 'social', th: 'ปั๊มฟอล/ไลค์', en: 'Social Boost', zh: '涨粉涨赞', desc_th: 'Facebook, Instagram, TikTok', desc_en: 'Facebook, Instagram, TikTok', desc_zh: 'Facebook, Instagram, TikTok' },
+const trustBadges = [
+  { icon: '⚡', th: 'ส่งอัตโนมัติ', en: 'Auto Delivery', zh: '自动发货' },
+  { icon: '🕐', th: 'เปิด 24 ชม.', en: '24/7 Open', zh: '24小时' },
+  { icon: '💰', th: 'ราคาถูกสุด', en: 'Lowest Price', zh: '最低价' },
+  { icon: '🔒', th: 'ปลอดภัย 100%', en: '100% Secure', zh: '100%安全' },
 ];
 
 export default function HomePage() {
   const { lang } = useApp();
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/products').then(r => r.json()).then(data => {
-      setCategories(data.categories || []);
-      setProducts(data.products?.slice(0, 6) || []);
-    }).catch(() => {});
+    fetch('/api/products')
+      .then((r) => r.json())
+      .then((data) => {
+        setCategories(data.categories || []);
+        setProducts(data.products?.slice(0, 6) || []);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
   }, []);
 
   const getName = (item: any) => item[`name_${lang}`] || item.name_th;
   const getDesc = (item: any) => item[`description_${lang}`] || item.description_th || '';
 
+  const h = heroData[lang];
+
   return (
-    <div className="fade-in">
-      {/* Hero Section */}
-      <section className="hero-gradient text-white py-20 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            {heroTitles[lang]}
-          </h1>
-          <p className="text-lg md:text-xl opacity-90 mb-8">
-            {slogans[lang]}
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/products" className="bg-white text-[var(--accent)] font-bold px-8 py-3 rounded-lg hover:shadow-lg transition-all hover:scale-105">
-              {t('hero.cta', lang)}
-            </Link>
-            <Link href="/auth?mode=register" className="border-2 border-white text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-all">
-              {t('nav.register', lang)}
-            </Link>
+    <div className="animate-fade-in">
+      {/* ============ HERO ============ */}
+      <section className="hero-section text-white py-20 md:py-28 relative">
+        <div className="container-app relative z-10">
+          <div className="max-w-2xl mx-auto md:mx-0">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-sm font-medium mb-6">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              {lang === 'th' ? 'ออนไลน์แล้ว — สินค้าพร้อมส่ง' : lang === 'en' ? 'Online — Ready to Deliver' : '在线 — 随时发货'}
+            </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 whitespace-pre-line">
+              {h.title}
+            </h1>
+            <p className="text-lg md:text-xl text-white/70 mb-8 max-w-lg">
+              {h.subtitle}
+            </p>
+
+            <div className="flex flex-wrap gap-3 mb-10">
+              <Link
+                href="/products"
+                className="btn-primary text-base px-8 py-3.5 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30"
+              >
+                {h.cta} →
+              </Link>
+              <Link
+                href="/auth?mode=register"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border-2 border-white/20 text-white font-semibold hover:bg-white/10 transition-all text-base"
+              >
+                {t('nav.register', lang)}
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex flex-wrap gap-4 md:gap-6">
+              {trustBadges.map((b, i) => (
+                <div key={i} className="flex items-center gap-2 text-white/60 text-sm">
+                  <span className="text-lg">{b.icon}</span>
+                  <span>{b[lang === 'th' ? 'th' : lang === 'en' ? 'en' : 'zh']}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-          {lang === 'th' ? 'บริการของเรา' : lang === 'en' ? 'Our Services' : '我们的服务'}
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* ============ CATEGORIES ============ */}
+      <section className="container-app py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-extrabold mb-2">
+            {lang === 'th' ? 'บริการของเรา' : lang === 'en' ? 'Our Services' : '我们的服务'}
+          </h2>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            {lang === 'th' ? 'เลือกบริการที่คุณต้องการ' : lang === 'en' ? 'Choose what you need' : '选择您需要的服务'}
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {categories.map((cat: any) => (
             <Link
               key={cat.id}
               href={`/products?category=${cat.slug}`}
-              className="card p-6 text-center hover:border-[var(--accent)] transition-all"
+              className="service-card"
             >
-              <div className="text-4xl mb-3">{cat.icon}</div>
-              <h3 className="font-semibold text-sm">{getName(cat)}</h3>
+              <span className="service-icon">{cat.icon}</span>
+              <h3 className="text-sm font-bold leading-tight">{getName(cat)}</h3>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-          {lang === 'th' ? 'ทำไมต้อง PayOTP?' : lang === 'en' ? 'Why PayOTP?' : '为什么选择 PayOTP？'}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f) => (
-            <div key={f.key} className="card p-6">
-              <div className="feature-icon mb-4">{f.icon}</div>
-              <h3 className="font-bold mb-2">{f[lang === 'th' ? 'th' : lang === 'en' ? 'en' : 'zh']}</h3>
-              <p className="text-sm" style={{color: 'var(--text-secondary)'}}>
-                {f[`desc_${lang}` as keyof typeof f]}
+      {/* ============ POPULAR PRODUCTS ============ */}
+      {products.length > 0 && (
+        <section className="container-app py-12">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-1">
+                🔥 {lang === 'th' ? 'สินค้ายอดนิยม' : lang === 'en' ? 'Popular Products' : '热门商品'}
+              </h2>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                {lang === 'th' ? 'สินค้าขายดีที่สุดของเรา' : lang === 'en' ? 'Our best-selling products' : '我们最畅销的商品'}
+              </p>
+            </div>
+            <Link href="/products" className="text-[var(--primary)] text-sm font-semibold hover:underline hidden sm:inline">
+              {lang === 'th' ? 'ดูทั้งหมด →' : lang === 'en' ? 'View All →' : '查看全部 →'}
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {products.map((p: any) => (
+              <Link key={p.id} href="/products" className="product-card">
+                <div className="product-card-header">
+                  <span className="badge badge-primary">{p.category_icon} {p.category_slug}</span>
+                  {p.stock > 0 ? (
+                    <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+                      <span className={`stock-dot ${p.stock < 5 ? 'stock-dot-low' : 'stock-dot-high'}`}></span>
+                      {t('product.stock', lang)} {p.stock}
+                    </div>
+                  ) : (
+                    <span className="badge badge-danger">{t('product.outOfStock', lang)}</span>
+                  )}
+                </div>
+                <div className="product-card-body">
+                  <h3 className="font-bold mb-1">{getName(p)}</h3>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                    {getDesc(p)}
+                  </p>
+                </div>
+                <div className="product-card-footer">
+                  <div className="flex items-baseline gap-2">
+                    <span className="price-sm">฿{p.price}</span>
+                    {p.original_price && (
+                      <>
+                        <span className="price-original">฿{p.original_price}</span>
+                        <span className="discount-tag">
+                          -{Math.round((1 - p.price / p.original_price) * 100)}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <span className="btn-primary text-xs px-4 py-2">
+                    {t('product.buy', lang)}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-6 sm:hidden">
+            <Link href="/products" className="btn-secondary">
+              {lang === 'th' ? 'ดูทั้งหมด →' : lang === 'en' ? 'View All →' : '查看全部 →'}
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ============ WHY US ============ */}
+      <section className="container-app py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-extrabold mb-2">
+            {lang === 'th' ? 'ทำไมต้อง PayOTP?' : lang === 'en' ? 'Why Choose PayOTP?' : '为什么选择 PayOTP？'}
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: '⚡',
+              title_th: 'ส่งอัตโนมัติ ทันที',
+              title_en: 'Instant Auto Delivery',
+              title_zh: '即时自动发货',
+              desc_th: 'สินค้าส่งทันทีหลังจ่ายเงิน ไม่ต้องรอ ไม่ต้องทักแอดมิน',
+              desc_en: 'Products delivered instantly after payment. No waiting.',
+              desc_zh: '付款后即时发货，无需等待',
+            },
+            {
+              icon: '💰',
+              title_th: 'ราคาถูกที่สุด',
+              title_en: 'Lowest Prices',
+              title_zh: '最低价格',
+              desc_th: 'ราคาส่งจากจีนโดยตรง ถูกกว่าหน้าร้าน 30-60%',
+              desc_en: 'Wholesale prices directly from China. 30-60% cheaper.',
+              desc_zh: '中国直供批发价，比零售便宜30-60%',
+            },
+            {
+              icon: '🔒',
+              title_th: 'ปลอดภัย มั่นใจ',
+              title_en: 'Safe & Secure',
+              title_zh: '安全可靠',
+              desc_th: 'ข้อมูลปลอดภัย SSL ชำระเงินผ่าน PromptPay ที่เชื่อถือได้',
+              desc_en: 'SSL secured. Payment via trusted PromptPay.',
+              desc_zh: 'SSL加密保护，通过可信赖的PromptPay付款',
+            },
+          ].map((item, i) => (
+            <div key={i} className="feature-card">
+              <div className="feature-icon">{item.icon}</div>
+              <h3 className="font-bold mb-2">
+                {item[`title_${lang}` as keyof typeof item]}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                {item[`desc_${lang}` as keyof typeof item]}
               </p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Popular Products */}
-      {products.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold">
-              {lang === 'th' ? '🔥 สินค้ายอดนิยม' : lang === 'en' ? '🔥 Popular Products' : '🔥 热门商品'}
+      {/* ============ PAYMENT METHODS ============ */}
+      <section className="container-app py-12">
+        <div className="card p-8 md:p-10">
+          <div className="text-center mb-8">
+            <h2 className="text-xl md:text-2xl font-extrabold mb-2">
+              💳 {lang === 'th' ? 'ช่องทางชำระเงิน' : lang === 'en' ? 'Payment Methods' : '支付方式'}
             </h2>
-            <Link href="/products" className="text-[var(--accent)] font-medium text-sm hover:underline">
-              {lang === 'th' ? 'ดูทั้งหมด →' : lang === 'en' ? 'View All →' : '查看全部 →'}
-            </Link>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              {lang === 'th' ? 'สะดวก รวดเร็ว ปลอดภัย' : lang === 'en' ? 'Convenient, Fast, Secure' : '方便、快速、安全'}
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((p: any) => (
-              <Link key={p.id} href="/products" className="card p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <span className="badge badge-blue">{p.category_icon} {p.category_slug}</span>
-                  {p.stock > 0 ? (
-                    <span className="badge badge-green">✓ {t('product.stock', lang)} {p.stock}</span>
-                  ) : (
-                    <span className="badge badge-red">{t('product.outOfStock', lang)}</span>
-                  )}
-                </div>
-                <h3 className="font-bold mb-1">{getName(p)}</h3>
-                <p className="text-xs mb-3" style={{color: 'var(--text-muted)'}}>{getDesc(p)}</p>
-                <div className="flex items-center gap-2">
-                  <span className="price-tag">฿{p.price}</span>
-                  {p.original_price && (
-                    <span className="price-original">฿{p.original_price}</span>
-                  )}
-                </div>
-              </Link>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {['PromptPay', 'TrueMoney', 'กสิกร', 'ไทยพาณิชย์', 'กรุงไทย', 'กรุงเทพ'].map((bank) => (
+              <div
+                key={bank}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}
+              >
+                {bank}
+              </div>
             ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* CTA */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <div className="card p-10 text-center gradient-bg text-white rounded-2xl">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            {lang === 'th' ? 'เริ่มซื้อสินค้าราคาถูกวันนี้!' : lang === 'en' ? 'Start Shopping Today!' : '今天就开始购物吧！'}
-          </h2>
-          <p className="opacity-90 mb-6">
-            {lang === 'th' ? 'สมัครสมาชิกฟรี รับส่วนลดพิเศษมากมาย' : lang === 'en' ? 'Free registration with exclusive discounts' : '免费注册享受独家折扣'}
-          </p>
-          <Link href="/auth?mode=register" className="inline-block bg-white text-[var(--accent)] font-bold px-8 py-3 rounded-lg hover:shadow-lg transition-all">
-            {t('auth.registerBtn', lang)}
-          </Link>
+      {/* ============ CTA ============ */}
+      <section className="container-app py-16">
+        <div className="gradient-bg rounded-2xl p-10 md:p-14 text-center text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'0.3\'%3E%3Cpath d=\'M0 0h20v20H0V0zm20 20h20v20H20V20z\'/%3E%3C/g%3E%3C/svg%3E")'
+          }}></div>
+          <div className="relative z-10">
+            <h2 className="text-2xl md:text-4xl font-extrabold mb-4">
+              {lang === 'th' ? 'พร้อมซื้อสินค้าราคาถูก?' : lang === 'en' ? 'Ready to Shop?' : '准备购物了吗？'}
+            </h2>
+            <p className="text-white/80 mb-8 text-lg max-w-md mx-auto">
+              {lang === 'th'
+                ? 'สมัครสมาชิกฟรี แล้วเริ่มซื้อสินค้าราคาถูกได้เลย'
+                : lang === 'en'
+                ? 'Register for free and start buying at the lowest prices'
+                : '免费注册，立即开始低价购物'}
+            </p>
+            <Link
+              href="/auth?mode=register"
+              className="inline-flex items-center gap-2 bg-white text-[var(--primary)] font-bold px-10 py-4 rounded-xl hover:shadow-xl transition-all text-lg"
+            >
+              {t('auth.registerBtn', lang)} 🚀
+            </Link>
+          </div>
         </div>
       </section>
     </div>

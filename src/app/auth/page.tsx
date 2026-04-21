@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useApp } from '@/components/AppContext';
 import { t } from '@/lib/i18n';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -61,115 +61,135 @@ function AuthContent() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 fade-in">
-      <div className="card p-8 w-full max-w-md">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
+      <div className="w-full max-w-md">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-xl gradient-bg flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center text-white font-extrabold text-2xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
             P
           </div>
-          <h1 className="text-2xl font-bold mb-2">
-            {mode === 'login' ? t('nav.login', lang) : t('nav.register', lang)}
+          <h1 className="text-2xl font-extrabold">
+            {mode === 'login'
+              ? (lang === 'th' ? 'ยินดีต้อนรับกลับ' : lang === 'en' ? 'Welcome Back' : '欢迎回来')
+              : (lang === 'th' ? 'สร้างบัญชีใหม่' : lang === 'en' ? 'Create Account' : '创建账户')}
           </h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+            {mode === 'login'
+              ? (lang === 'th' ? 'เข้าสู่ระบบเพื่อดำเนินการต่อ' : lang === 'en' ? 'Sign in to continue' : '登录以继续')
+              : (lang === 'th' ? 'สมัครสมาชิกฟรี ใช้เวลาไม่ถึง 1 นาที' : lang === 'en' ? 'Free registration, takes less than 1 minute' : '免费注册，不到1分钟')}
+          </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex rounded-lg p-1 mb-6" style={{backgroundColor: 'var(--bg-primary)'}}>
-          <button
-            onClick={() => setMode('login')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'login' ? 'gradient-bg text-white shadow' : ''}`}
-          >
-            {t('nav.login', lang)}
-          </button>
-          <button
-            onClick={() => setMode('register')}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${mode === 'register' ? 'gradient-bg text-white shadow' : ''}`}
-          >
-            {t('nav.register', lang)}
-          </button>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 rounded-lg text-sm" style={{backgroundColor: 'var(--danger)', color: 'white', opacity: 0.9}}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('auth.username', lang)}</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.username}
-              onChange={(e) => setForm({...form, username: e.target.value})}
-              required
-            />
+        <div className="card p-8">
+          {/* Toggle */}
+          <div className="flex rounded-xl p-1 mb-6" style={{ background: 'var(--bg-input)' }}>
+            <button
+              onClick={() => setMode('login')}
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                mode === 'login' ? 'gradient-bg text-white shadow-md' : ''
+              }`}
+            >
+              {t('nav.login', lang)}
+            </button>
+            <button
+              onClick={() => setMode('register')}
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+                mode === 'register' ? 'gradient-bg text-white shadow-md' : ''
+              }`}
+            >
+              {t('nav.register', lang)}
+            </button>
           </div>
 
-          {mode === 'register' && (
+          {error && (
+            <div className="toast-error mb-5 text-sm">{error}</div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">{t('auth.email', lang)}</label>
+              <label className="input-label">{t('auth.username', lang)}</label>
               <input
-                type="email"
+                type="text"
                 className="input-field"
-                value={form.email}
-                onChange={(e) => setForm({...form, email: e.target.value})}
+                value={form.username}
+                onChange={(e) => setForm({...form, username: e.target.value})}
                 required
+                placeholder={lang === 'th' ? 'กรอกชื่อผู้ใช้' : 'Enter username'}
               />
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('auth.password', lang)}</label>
-            <input
-              type="password"
-              className="input-field"
-              value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})}
-              required
-              minLength={6}
-            />
-          </div>
-
-          {mode === 'register' && (
-            <>
+            {mode === 'register' && (
               <div>
-                <label className="block text-sm font-medium mb-1">{t('auth.confirmPassword', lang)}</label>
+                <label className="input-label">{t('auth.email', lang)}</label>
                 <input
-                  type="password"
+                  type="email"
                   className="input-field"
-                  value={form.confirmPassword}
-                  onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
+                  value={form.email}
+                  onChange={(e) => setForm({...form, email: e.target.value})}
                   required
+                  placeholder="email@example.com"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">{t('auth.referralCode', lang)}</label>
-                <input
-                  type="text"
-                  className="input-field"
-                  value={form.referralCode}
-                  onChange={(e) => setForm({...form, referralCode: e.target.value.toUpperCase()})}
-                  placeholder="XXXXXXXX"
-                />
-              </div>
-            </>
-          )}
+            )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-base">
-            {loading ? t('common.loading', lang) : mode === 'login' ? t('auth.loginBtn', lang) : t('auth.registerBtn', lang)}
-          </button>
-        </form>
+            <div>
+              <label className="input-label">{t('auth.password', lang)}</label>
+              <input
+                type="password"
+                className="input-field"
+                value={form.password}
+                onChange={(e) => setForm({...form, password: e.target.value})}
+                required
+                minLength={6}
+                placeholder="••••••••"
+              />
+            </div>
 
-        <p className="text-center text-sm mt-6" style={{color: 'var(--text-muted)'}}>
-          {mode === 'login' ? t('auth.noAccount', lang) : t('auth.hasAccount', lang)}{' '}
-          <button
-            onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-            className="text-[var(--accent)] font-medium hover:underline"
-          >
-            {mode === 'login' ? t('nav.register', lang) : t('nav.login', lang)}
-          </button>
-        </p>
+            {mode === 'register' && (
+              <>
+                <div>
+                  <label className="input-label">{t('auth.confirmPassword', lang)}</label>
+                  <input
+                    type="password"
+                    className="input-field"
+                    value={form.confirmPassword}
+                    onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
+                    required
+                    placeholder="••••••••"
+                  />
+                </div>
+                <div>
+                  <label className="input-label">{t('auth.referralCode', lang)}</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={form.referralCode}
+                    onChange={(e) => setForm({...form, referralCode: e.target.value.toUpperCase()})}
+                    placeholder="XXXXXXXX"
+                  />
+                </div>
+              </>
+            )}
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 text-base mt-2">
+              {loading
+                ? (lang === 'th' ? 'กำลังดำเนินการ...' : lang === 'en' ? 'Processing...' : '处理中...')
+                : mode === 'login' ? t('auth.loginBtn', lang) : t('auth.registerBtn', lang)}
+            </button>
+          </form>
+
+          <div className="divider" />
+
+          <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+            {mode === 'login' ? t('auth.noAccount', lang) : t('auth.hasAccount', lang)}{' '}
+            <button
+              onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+              className="text-[var(--primary)] font-semibold hover:underline"
+            >
+              {mode === 'login' ? t('nav.register', lang) : t('nav.login', lang)}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -177,7 +197,7 @@ function AuthContent() {
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center"><div className="skeleton w-20 h-20 rounded-full"></div></div>}>
       <AuthContent />
     </Suspense>
   );
