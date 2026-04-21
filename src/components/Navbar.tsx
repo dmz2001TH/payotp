@@ -213,7 +213,7 @@ export default function Navbar() {
       {/* Mobile menu overlay */}
       {showMobile && (
         <div className="fixed inset-0 z-[999] md:hidden" onClick={() => setShowMobile(false)}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/70" />
           <div
             className="absolute top-16 left-0 right-0 card-modern mx-3 p-4 animate-fade-in"
             style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
