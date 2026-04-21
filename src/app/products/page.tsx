@@ -248,9 +248,15 @@ export default function ProductsPage() {
           </div>
         ) : paginatedProducts.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
               {paginatedProducts.map((p: any) => (
                 <div key={p.id} className="product-card">
+                  {/* Product image */}
+                  {p.image_url && (
+                    <div className="w-full h-36 md:h-44 overflow-hidden" style={{ borderBottom: '1px solid var(--border)' }}>
+                      <img src={p.image_url} alt={getName(p)} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
+                    </div>
+                  )}
                   <div className="product-card-header">
                     <span className="badge badge-primary">{p.category_icon} {p.category_slug}</span>
                     {p.stock > 0 ? (
@@ -264,12 +270,12 @@ export default function ProductsPage() {
                   </div>
                   <div className="product-card-body">
                     <h3 className="font-bold mb-1.5">{getName(p)}</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--text-muted)' }}>
                       {getDesc(p)}
                     </p>
                   </div>
                   <div className="product-card-footer">
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-baseline gap-2 flex-wrap">
                       <span className="price-sm">฿{p.price}</span>
                       {p.original_price && (
                         <>

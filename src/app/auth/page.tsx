@@ -1,29 +1,41 @@
 'use client';
 import { useState, Suspense } from 'react';
 import { useApp } from '@/components/AppContext';
+import { useToast } from '@/components/Toast';
 import { t } from '@/lib/i18n';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function AuthContent() {
   const { lang, fetchUser } = useApp();
+  const toast = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<'login' | 'register'>(
     searchParams.get('mode') === 'register' ? 'register' : 'login'
   );
-  const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '', referralCode: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    referralCode: searchParams.get('ref') || '',
+  });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
       if (mode === 'register') {
         if (form.password !== form.confirmPassword) {
-          setError(lang === 'th' ? 'รหัสผ่านไม่ตรงกัน' : lang === 'en' ? 'Passwords do not match' : '密码不匹配');
+          toast.showToast(lang === 'th' ? 'รหัสผ่านไม่ตรงกัน' : lang === 'en' ? 'Passwords do not match' : '密码不匹配', 'error');
+          setLoading(false);
+          return;
+        }
+        if (form.password.length < 6) {
+          toast.showToast(lang === 'th' ? 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' : lang === 'en' ? 'Password must be at least 6 characters' : '密码至少6个字符', 'error');
           setLoading(false);
           return;
         }
@@ -40,6 +52,7 @@ function AuthContent() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
+        toast.showToast(t('common.success', lang), 'success');
         await fetchUser();
         router.push('/products');
       } else {
@@ -50,25 +63,31 @@ function AuthContent() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
+        toast.showToast(t('common.success', lang), 'success');
         await fetchUser();
         router.push('/products');
       }
     } catch (err: any) {
-      setError(err.message);
+      toast.showToast(err.message || t('toast.error', lang), 'error');
     } finally {
       setLoading(false);
     }
   };
 
+  const switchMode = (newMode: 'login' | 'register') => {
+    setMode(newMode);
+    setForm({ username: '', email: '', password: '', confirmPassword: '', referralCode: '' });
+  };
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 animate-fade-in">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 md:py-12 animate-fade-in">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center text-white font-extrabold text-2xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl gradient-bg flex items-center justify-center text-white font-extrabold text-xl md:text-2xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
             P
           </div>
-          <h1 className="text-2xl font-extrabold">
+          <h1 className="text-xl md:text-2xl font-extrabold">
             {mode === 'login'
               ? (lang === 'th' ? 'ยินดีต้อนรับกลับ' : lang === 'en' ? 'Welcome Back' : '欢迎回来')
               : (lang === 'th' ? 'สร้างบัญชีใหม่' : lang === 'en' ? 'Create Account' : '创建账户')}
@@ -80,11 +99,11 @@ function AuthContent() {
           </p>
         </div>
 
-        <div className="card p-8">
+        <div className="card p-5 md:p-8">
           {/* Toggle */}
           <div className="flex rounded-xl p-1 mb-6" style={{ background: 'var(--bg-input)' }}>
             <button
-              onClick={() => setMode('login')}
+              onClick={() => switchMode('login')}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
                 mode === 'login' ? 'gradient-bg text-white shadow-md' : ''
               }`}
@@ -92,7 +111,7 @@ function AuthContent() {
               {t('nav.login', lang)}
             </button>
             <button
-              onClick={() => setMode('register')}
+              onClick={() => switchMode('register')}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
                 mode === 'register' ? 'gradient-bg text-white shadow-md' : ''
               }`}
@@ -100,10 +119,6 @@ function AuthContent() {
               {t('nav.register', lang)}
             </button>
           </div>
-
-          {error && (
-            <div className="toast-error mb-5 text-sm">{error}</div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -114,6 +129,7 @@ function AuthContent() {
                 value={form.username}
                 onChange={(e) => setForm({...form, username: e.target.value})}
                 required
+                autoComplete="username"
                 placeholder={lang === 'th' ? 'กรอกชื่อผู้ใช้' : 'Enter username'}
               />
             </div>
@@ -127,6 +143,7 @@ function AuthContent() {
                   value={form.email}
                   onChange={(e) => setForm({...form, email: e.target.value})}
                   required
+                  autoComplete="email"
                   placeholder="email@example.com"
                 />
               </div>
@@ -134,15 +151,26 @@ function AuthContent() {
 
             <div>
               <label className="input-label">{t('auth.password', lang)}</label>
-              <input
-                type="password"
-                className="input-field"
-                value={form.password}
-                onChange={(e) => setForm({...form, password: e.target.value})}
-                required
-                minLength={6}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="input-field pr-12"
+                  value={form.password}
+                  onChange={(e) => setForm({...form, password: e.target.value})}
+                  required
+                  minLength={6}
+                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
             </div>
 
             {mode === 'register' && (
@@ -155,6 +183,7 @@ function AuthContent() {
                     value={form.confirmPassword}
                     onChange={(e) => setForm({...form, confirmPassword: e.target.value})}
                     required
+                    autoComplete="new-password"
                     placeholder="••••••••"
                   />
                 </div>
@@ -183,7 +212,7 @@ function AuthContent() {
           <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
             {mode === 'login' ? t('auth.noAccount', lang) : t('auth.hasAccount', lang)}{' '}
             <button
-              onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+              onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
               className="text-[var(--primary)] font-semibold hover:underline"
             >
               {mode === 'login' ? t('nav.register', lang) : t('nav.login', lang)}

@@ -35,13 +35,13 @@ export async function POST(req: NextRequest) {
     const id = uuidv4();
 
     db.prepare(`
-      INSERT INTO products (id, category_id, name_th, name_en, name_zh, description_th, description_en, description_zh, price, original_price, stock, type, sort_order, active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+      INSERT INTO products (id, category_id, name_th, name_en, name_zh, description_th, description_en, description_zh, price, original_price, stock, type, sort_order, image_url, active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
     `).run(
       id, data.category_id, data.name_th, data.name_en, data.name_zh,
       data.description_th || '', data.description_en || '', data.description_zh || '',
       data.price, data.original_price || null, data.stock || 0, data.type || 'account',
-      data.sort_order || 0
+      data.sort_order || 0, data.image_url || ''
     );
 
     return NextResponse.json({ success: true, id });
