@@ -16,12 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" suppressHydrationWarning>
+    <html lang="th" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className="min-h-screen">
         <AppProvider>
           <ToastProvider>
             <Navbar />
-            <main className="min-h-[80vh]">
+            <main className="min-h-[80vh]" style={{ paddingTop: 'var(--navbar-height, 64px)' }}>
               {children}
             </main>
             <Footer />
